@@ -1,0 +1,45 @@
+concurrent = 1
+check_interval = 0
+
+[session_server]
+  session_timeout = 1800
+
+[[runners]]
+  name = "docker-runner"
+  url = "URL do Gitlab"
+  token = "Token do Gitlab"
+  executor = "docker+machine"
+  [runners.custom_build_dir]
+  [runners.docker]
+    tls_verify = false
+    image = "docker:19.03.5"
+    privileged = false
+    disable_entrypoint_overwrite = false
+    oom_kill_disable = false
+    disable_cache = false
+    volumes = ["/var/run/docker.sock:/var/run/docker.sock", "/cache"]
+    shm_size = 0
+  [runners.cache]
+    [runners.cache.s3]
+    [runners.cache.gcs]
+  [runners.machine]
+    IdleCount = 1                    # - Deve haver 5 máquinas no estado ocioso - quando o modo Off Peak estiver desativado
+    IdleTime = 600                   # - 
+    MaxBuilds = 3                    # - Cada máquina pode lidar com até 1 trabalhos seguidos (depois disso, ela será removida)
+    MachineName = "gitlab-runner-%s"    # - Cada máquina terá um nome exclusivo ('% s' é necess�)
+    MachineDriver = "amazonec2"
+    MachineOptions = [
+      "amazonec2-access-key=AAA",
+      "amazonec2-secret-key=AAA",
+      "amazonec2-region=us-west-1",
+      "amazonec2-zone=c",
+      "amazonec2-vpc-id=vpc-AAA",
+      "amazonec2-subnet-id=subnet-AAA",
+      "amazonec2-security-group=NomeDoGRupo",
+      "amazonec2-instance-type=t2.micro",
+      "amazonec2-request-spot-instance=true",
+      "amazonec2-spot-price=0.05"
+    ]
+    OffPeakPeriods = ""
+    OffPeakIdleCount = 0
+    OffPeakIdleTime = 120
