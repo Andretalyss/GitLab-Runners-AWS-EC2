@@ -1,4 +1,4 @@
-concurrent = 1
+concurrent = 10
 check_interval = 0
 
 [session_server]
@@ -9,24 +9,22 @@ check_interval = 0
   url = "URL do Gitlab"
   token = "Token do Gitlab"
   executor = "docker+machine"
-  [runners.custom_build_dir]
+  limit = 10
+  clone_url = "URl do gitlab"
   [runners.docker]
     tls_verify = false
     image = "docker:19.03.5"
-    privileged = false
+    privileged = true
     disable_entrypoint_overwrite = false
     oom_kill_disable = false
     disable_cache = false
     volumes = ["/var/run/docker.sock:/var/run/docker.sock", "/cache"]
     shm_size = 0
-  [runners.cache]
-    [runners.cache.s3]
-    [runners.cache.gcs]
   [runners.machine]
-    IdleCount = 1                    # - Deve haver 5 máquinas no estado ocioso - quando o modo Off Peak estiver desativado
-    IdleTime = 600                   # - 
-    MaxBuilds = 3                    # - Cada máquina pode lidar com até 1 trabalhos seguidos (depois disso, ela será removida)
-    MachineName = "gitlab-runner-%s"    # - Cada máquina terá um nome exclusivo ('% s' é necess�)
+    IdleCount = 1                    
+    IdleTime = 40                  
+    MaxBuilds = 3                    
+    MachineName = "gitlab-runner-%s"    
     MachineDriver = "amazonec2"
     MachineOptions = [
       "amazonec2-access-key=AAA",
@@ -37,9 +35,24 @@ check_interval = 0
       "amazonec2-subnet-id=subnet-AAA",
       "amazonec2-security-group=NomeDoGRupo",
       "amazonec2-instance-type=t2.micro",
-      "amazonec2-request-spot-instance=true",
-      "amazonec2-spot-price=0.05"
+      "amazonec2-volume-type=gp3",
+      "amazonec2-private-address-only=true",  # - You can configure the runner to run only private address, for security reasons.
+      "amazonec2-tags=Example,Tag" # You can add tags in machine for organization.
     ]
-    OffPeakPeriods = ""
-    OffPeakIdleCount = 0
-    OffPeakIdleTime = 120
+    
+    # You can set the times of autoscaling machines.
+  [[runners.machine.autoscaling]]
+    Periods = ["* * 8-11 * * mon-fri *"] # Every day of the week, between 8:00am and 11:59am, there will be an idle machine.
+    IdleCount = 1
+    IdleTime = 180
+    Timezone = "America/Sao_Paulo"
+  [[runners.machine.autoscaling]]
+    Periods = ["* * 14-17 * * mon-fri *"] # Every day of the week, between 14:00pm and 17:59, there will be an idle machine.
+    IdleCount = 1
+    IdleTime = 180
+    Timezone = "America/Sao_Paulo"
+  [[runners.machine.autoscaling]]
+    Periods = ["* * * * * sat,sun *"] # On weekends, there will be no idle machines.
+    IdleCount = 0
+    IdleTime = 60
+    Timezone = "America/Sao_Paulo"
