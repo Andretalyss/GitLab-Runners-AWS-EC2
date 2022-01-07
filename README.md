@@ -3,6 +3,11 @@
     <h1> GitLab scaled runners with AWS EC2. </h1>
     My experience with autoscaling runners with aws ec2.
    
+   <h3> Prerequisites </h3>
+    
+   >   1. A container of gitlab up and running.
+   >   2. A container of gitlab runner up and running or gitlab runner installed in your machine.
+   
    <h3> Introduction </h3>
   
    >  Mini tutorial on how to implement scaled gitlab runners with EC2 machines,including template configurations 
@@ -17,11 +22,6 @@
    <h3> Disadvantages </h3>
    
    > - Requested instances take an average of 1 minute to be created.
-   
-   <h3> Prerequisites </h3>
-    
-   >   1. A container of gitlab up and running.
-   >    2. A container of gitlab runner up and running or gitlab runner installed in your machine.
     
    <h3>  Registering runner </h3>
     
