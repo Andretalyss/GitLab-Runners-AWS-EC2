@@ -8,6 +8,16 @@
    >  Mini tutorial on how to implement scaled gitlab runners with EC2 machines,including template configurations 
       and build commands.
     
+   <h3> Benefits </h3>
+   
+   > - Jobs running in parallel
+   > - Economy, as it is only used when you need it. (It can be even more economical using spots instances).
+   > - You can set the number of machines per time, data or year using cron format.
+    
+   <h3> Disadvantages </h3>
+   
+   > - Requested instances take an average of 1 minute to be created.
+   
    <h3> Prerequisites </h3>
     
    >   1. A container of gitlab up and running.
