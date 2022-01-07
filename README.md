@@ -26,7 +26,7 @@
    <h3>  Registering runner </h3>
     
   >    With your container or gitlab-runner installed in your machine, we will register a runner in your gitlab instance.
-  >    On your github instance, go to the admin > runners menu and copy URL and registration token.
+  >    On your gitlab instance, go to the admin > runners menu and copy URL and registration token.
   >    Now, execute:
     
   ```sh
