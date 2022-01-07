@@ -29,8 +29,9 @@
   >    On your gitlab instance, go to the admin > runners menu and copy URL and registration token.
   >    Now, execute:
     
-  ```sh
-        If you be in a container of gitlab-runner:
+  > If you be in a container of gitlab-runner:
+    
+  ```
               docker exec gitlab-runner gitlab-runner register \
               --non-interactive \
               --description "Scaled-Runner" \
@@ -43,8 +44,10 @@
               --run-untagged="true" \ 
               --locked="false"
    ```
-   ```sh
-         If you in gitlab-runner local:
+    
+   > If you in gitlab-runner local:
+    
+   ```
               gitlab-runner gitlab-runner register \
               --non-interactive \
               --description "Scaled-Runner" \
