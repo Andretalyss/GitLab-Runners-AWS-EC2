@@ -233,7 +233,7 @@ check_interval = 0
       "amazonec2-instance-type= INSTANCE-TYPE ",
       "amazonec2-volume-type= VOLUME-TYPE ",
       "amazonec2-private-address-only=true",
-      "amazonec2-tags=Example,AutoScaling"
+      "amazonec2-tags=GitLabRunner,AllowDeleteAutoScaling"
     ]
 
   ```
