@@ -153,6 +153,8 @@ check_interval = 0
    
  - Run docker-machine ls in terminal or inside a container and observe the machines state creation and return.
   
+ <img align="center" src="https://github.com/Andretalyss/GitLab-Runners-AWS-EC2/blob/master/DockerMachineCommand.jpeg" width="900"/>
+  
   ## Autoscaling by cron format
     
   In the [[runners.machine]] section, add:
@@ -175,6 +177,10 @@ check_interval = 0
     IdleTime = 60
     Timezone = "America/Sao_Paulo"
   ```
-  
+   
+  ## Example of runner in execution
+    
+  <img align="center" src="https://github.com/Andretalyss/GitLab-Runners-AWS-EC2/blob/master/RunnerPrompt.png" width="1000"/>
+    
   </body>
 </html>
