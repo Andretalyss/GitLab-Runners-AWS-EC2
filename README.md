@@ -6,8 +6,9 @@
    
    <h3> Prerequisites </h3>
     
-   1. A container of gitlab up and running.
-   2. A container of gitlab runner up and running or gitlab runner installed in your machine.
+   1. EC2 Instance 
+   2. A container of gitlab up and running.
+   3. A container of gitlab runner up and running or gitlab runner installed in your machine.
     
    <h3> Benefits </h3>
    
@@ -64,6 +65,7 @@
   When the runners will be registered, we can create a template configurations archives.
   
   If you run the register in a container of GitLab-Runner, in the past /etc/gitlab-runner/ a file called config was created.
+  - Obs: In the gitlab-runner image creation, you can create a volume to replace the configs from inside of container to you local machine.
   
   #### Adding settings
    
@@ -88,10 +90,12 @@
   8. Add machine build options in the section MachineOptions
   
   - Add the following settings through your AWS resources:
+  - OBS: If use amazonec2-access-key and amazonec2-secret-key, it is not necessary to use amazonec2-iam-instance-profile. But as a good practice, I recommend using roles.
   
   ```  
       "amazonec2-access-key= YOURACESSKEY ",
       "amazonec2-secret-key= YOURSECRETKEY ",
+      "amazonec2-iam-instance-profile=YOUR-ROLE",  #  If not set access and secrets keys.
       "amazonec2-region= YOUR-REGION ",
       "amazonec2-zone= YOUR-REGION-ZONE ",
       "amazonec2-vpc-id=vpc-YOUR-VPC-ID",
@@ -100,9 +104,93 @@
       "amazonec2-instance-type= INSTANCE-TYPE ",
       "amazonec2-volume-type= VOLUME-TYPE ",
       "amazonec2-private-address-only=true",  # FOR USE ONLY PRIVATE ADDRESS ON YOUR MACHINES. (Optional)
-      "amazonec2-tags= YOUR TAGS"  # For added tags use "NAME-OF-THE-KEY, VALUE-OF-THE-KEY". 
+      "amazonec2-tags=GitLabRunner,AllowDeleteAutoScaling"  # For added tags use "NAME-OF-THE-KEY, VALUE-OF-THE-KEY". 
   ```
+ 
+  Our role or user needs some permissions in the IAM Section on AWS, set:
+  1. AWS managed policy :
+    
+   - AmazonEC2RoleforSSM -> Permission to access the instance via SSM. 
+   - AmazonSSMManagedInstanceCore.
+   - AmazonEC2ContainerRegistryPowerUser -> Permission to access ECR.
+   - AmazonECSTaskExecutionRolePolicy.
   
+  2. You need to create some policies:
+    
+   - EC2_Create_Policy:
+    
+   ```
+      {
+          "Version": "2012-10-17",
+          "Statement": [
+              {
+                  "Sid": "VisualEditor0",
+                  "Effect": "Allow",
+                  "Action": [
+                      "ec2:CreateTags",
+                      "ec2:RunInstances"
+                  ],
+                  "Resource": [
+                      "*"
+                  ]
+              },
+              {
+                  "Sid": "VisualEditor1",
+                  "Effect": "Allow",
+                  "Action": [
+                      "ec2:CreateNetworkInsightsPath",
+                      "ec2:Describe*",
+                      "ec2:GetConsole*",
+                      "ec2:CreateTags",
+                      "iam:ListInstanceProfiles",
+                      "ec2:AuthorizeSecurityGroupIngress"
+                  ],
+                  "Resource": "*"
+              }
+          ]
+      }
+   ```
+  - Terminate_EC2_With_Tags:  ( Only have permissions to terminate instance with tag of set in config.toml ).
+    
+   ```
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Sid": "StartStopIfTags",
+              "Effect": "Allow",
+              "Action": [
+                  "ec2:TerminateInstances",
+                  "ec2:DescribeTags",
+                  "ec2:StopInstances"
+              ],
+              "Resource": "*",
+              "Condition": {
+                  "ForAnyValue:StringEquals": {
+                      "aws:ResourceTag/GitLabRunner": "AllowDeleteAutoScaling"
+                  }
+              }
+          }
+      ]
+   ```
+   - GitLab_Runner_PassRole: ( If use role ).
+   
+   ```
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "iam:GetRole",
+                    "iam:PassRole"
+                ],
+                "Resource": "arn:aws:iam::ACCOUNT-ID:role/GitlabRunnerInstanceRole"
+            }
+        ]
+    }
+   ```
+ 
  - At the end of configurations, your config.toml file will be like this:
    
   ```
